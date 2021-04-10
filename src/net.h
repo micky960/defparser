@@ -9,6 +9,7 @@ class NET{
     std::string name;
     std::string src;
     std::vector<std::string> sinkList;
+    std::vector<std::string> netSegmentList;
     std::vector<std::pair<std::string, std::string> > objList;
     public:
         NET(const std::string net);
