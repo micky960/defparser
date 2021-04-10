@@ -6,11 +6,11 @@
 DEF::DEF(std::ifstream& def){
 
    _parseComponents(def); 
-   //std::cout << "Cell parse passed" << std::endl;
+   std::cout << "Cell parse passed" << std::endl;
    _parsePins(def); 
-   //std::cout << "Cell parse passed" << std::endl;
+   std::cout << "Pin parse passed" << std::endl;
    _parseNets(def); 
-   //std::cout << "Net parse passed" << std::endl;
+   std::cout << "Net parse passed" << std::endl;
    _connectAll();
 
 }
