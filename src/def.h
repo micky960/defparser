@@ -15,10 +15,12 @@ class DEF{
         std::unordered_map<std::string, CELL*> cellList;
         std::unordered_map<std::string, PIN*> pinList;
         std::unordered_map<std::string, NET*> netList;
+        std::vector<std::string> openList;
         DEF(std::ifstream& def);
         std::unordered_map<std::string, CELL*> getCells() const {return cellList;}
         std::unordered_map<std::string, PIN*> getPins() const {return pinList;}
         std::unordered_map<std::string, NET*> getNets() const {return netList;}
+        std::vector<std::string> getOpens(std::string);
 
     private:
         void _parseComponents(std::ifstream& def);

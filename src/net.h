@@ -10,6 +10,7 @@ class NET{
     std::string src;
     std::vector<std::string> sinkList;
     std::vector<std::string> netSegmentList;
+    std::vector<std::string> openList;
     std::vector<std::pair<std::string, std::string> > objList;
     public:
         NET(const std::string net);
@@ -19,6 +20,8 @@ class NET{
         void setSink(const std::string name){sinkList.push_back(name);}
         std::string getSrc() const {return src;}
         std::vector<std::string> getSink() const {return sinkList;}
+        std::vector<std::string> getOpen() const {return openList;}
+        void parseOpens(std::string);
 };
 
 #endif

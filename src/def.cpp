@@ -12,7 +12,7 @@ DEF::DEF(std::ifstream& def){
    _parseNets(def); 
    std::cout << "Net parse passed" << std::endl;
    _connectAll();
-
+   std::cout << "Connected all components" << std::endl;
 }
 
 void DEF::_parseComponents(std::ifstream& def){
@@ -68,10 +68,10 @@ void DEF::_parseNets(std::ifstream& def){
     while(line.find("END NETS")==std::string::npos){
         std::string lineCon;
         do{
-            lineCon += line;
+            lineCon += line+"\n";
             getline(def, line);
         }while(line.find(";")==std::string::npos);
-        lineCon += line;
+        lineCon += line+"\n";
         NET* net = new NET(lineCon);
         netList.insert({net->getName(), net});
         getline(def, line);
@@ -107,3 +107,16 @@ void DEF::_connectAll(){
     }
 }
 
+std::vector <std::string> DEF::getOpens(std::string splitLayer){
+
+    for(auto [name, net]: netList){
+        std::string src = net->getSrc();
+        net->parseOpens(splitLayer);
+        std::vector<std::string> netOpenList = net->getOpen();
+        openList.insert(openList.end(), netOpenList.begin(), netOpenList.end());
+        for(auto o: netOpenList){
+            std::cout << name << ", Loc: " << o << ", Source: " << net->getSrc() << std::endl;
+        }
+    }
+    return openList;
+}

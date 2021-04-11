@@ -53,7 +53,7 @@ vertex_t findVertex(std::string name, Graph g){
 
 int main(int argc, char* argv[]){
 
-	assert(argc==2);
+	assert(argc==3);
 
     std::ifstream def(argv[1]);
 
@@ -65,34 +65,42 @@ int main(int argc, char* argv[]){
     DEF defParse = DEF(def);
     std::cout << "Def parsed" <<std::endl;
 
-    std::unordered_map<std::string, CELL*> cellList = defParse.getCells();
-    Graph g;
-    for(auto [name, cell]: cellList){
-        vertex_t v = boost::add_vertex(g);
-        NODE* n = new NODE(cell->getName(), cell->getType(), cell->getLoc());
-        g[v] = n;
-    }
-    std::unordered_map<std::string, PIN*> pinList = defParse.getPins();
-    for(auto [name, pin]: pinList){
-        vertex_t v = boost::add_vertex(g);
-        std::string type = (pin->getDir())? "OUTPUT": "INPUT";
-        NODE* n = new NODE(pin->getName(), type, pin->getLoc());
-        g[v] = n;
-    }
-    std::unordered_map<std::string, NET*> netList = defParse.getNets();
+    //std::unordered_map<std::string, CELL*> cellList = defParse.getCells();
+    //Graph g;
+    //for(auto [name, cell]: cellList){
+    //    vertex_t v = boost::add_vertex(g);
+    //    NODE* n = new NODE(cell->getName(), cell->getType(), cell->getLoc());
+    //    g[v] = n;
+    //}
+    //std::unordered_map<std::string, PIN*> pinList = defParse.getPins();
+    //for(auto [name, pin]: pinList){
+    //    vertex_t v = boost::add_vertex(g);
+    //    std::string type = (pin->getDir())? "OUTPUT": "INPUT";
+    //    NODE* n = new NODE(pin->getName(), type, pin->getLoc());
+    //    g[v] = n;
+    //}
+    //std::unordered_map<std::string, NET*> netList = defParse.getNets();
 
-    for(auto [name, net]: netList){
-        vertex_t u = findVertex(net->getSrc(), g); 
-        std::pair<int, int> uLoc = g[u]->getLoc();
-        std::vector<std::string> sinkList = net->getSink();
-        for(auto s: sinkList){
-            vertex_t v = findVertex(s, g); 
-            std::pair<int, int> vLoc = g[v]->getLoc();
-            boost::add_edge(u, v, abs(vLoc.first - uLoc.first) + abs(vLoc.second - uLoc.second), g);
-        }
-    }
+    //for(auto [name, net]: netList){
+    //    vertex_t u = findVertex(net->getSrc(), g); 
+    //    std::pair<int, int> uLoc = g[u]->getLoc();
+    //    std::vector<std::string> sinkList = net->getSink();
+    //    for(auto s: sinkList){
+    //        vertex_t v = findVertex(s, g); 
+    //        std::pair<int, int> vLoc = g[v]->getLoc();
+    //        boost::add_edge(u, v, abs(vLoc.first - uLoc.first) + abs(vLoc.second - uLoc.second), g);
+    //    }
+    //}
 
-    boost::write_graphviz(std::cout, g);
+    //boost::write_graphviz(std::cout, g);
+    //std::unordered_map<std::string, NET*> netList = defParse.getNets();
+
+    //for(auto [name, net]: netList){
+    //    std::string src = net->getSrc();
+    //    net->parseOpens(argv[2]);
+    //}
+
+    std::vector<std::string> openList = defParse.getOpens(argv[2]);
     
     return 0;
 }

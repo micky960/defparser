@@ -40,3 +40,63 @@ NET::NET(std::string net){
 void NET::setSrc(std::string name){
     src=name;
 }
+
+void NET::parseOpens(std::string splitLayer){
+    //std::cout << name << std::endl;
+    std::unordered_map<std::string, int> locList;
+    for(auto n: netSegmentList){
+        std::vector<std::string> tokens;
+        boost::split(tokens, n, boost::is_any_of("("));
+        std::string xPrev, yPrev;
+
+        for(int i=1; i<tokens.size(); i++){
+            std::string x, y;
+            std::stringstream ss1;
+            ss1<<tokens[i];
+            ss1>>x;
+            if(x == "*")
+                x = xPrev;
+            ss1<<tokens[i];
+            ss1>>y;
+            if(y == "*")
+                y = yPrev;
+            if(locList.find((x+","+y).c_str()) == locList.end())
+                locList.insert({(x+","+y).c_str(), 0});
+            else{
+                locList[(x+","+y).c_str()] = locList[(x+","+y).c_str()]+1;
+                //std::cout << x << "," << y << " collision: " << locList[(x+","+y).c_str()] << std::endl;
+            }
+            
+            xPrev = x;
+            yPrev = y;
+            //std::cout << x << ", " << y << std::endl;
+        }
+    }
+    for(auto n: netSegmentList){
+        if(n.find("metal"+splitLayer) != std::string::npos){
+            //std::cout << n << std::endl;
+            std::vector<std::string> tokens;
+            boost::split(tokens, n, boost::is_any_of("("));
+            std::string xPrev, yPrev;
+
+            for(int i=1; i<tokens.size(); i++){
+                std::string x, y;
+                std::stringstream ss1;
+                ss1<<tokens[i];
+                ss1>>x;
+                if(x == "*")
+                    x = xPrev;
+                ss1<<tokens[i];
+                ss1>>y;
+                if(y == "*")
+                    y = yPrev;
+                if(locList[(x+","+y).c_str()] == 0)
+                    openList.push_back(x+","+y);
+                    //std::cout << x << ", " << y << "--> open" << std::endl;
+                xPrev = x;
+                yPrev = y;
+                //std::cout << x << ", " << y << std::endl;
+            }
+        }
+    }
+}
