@@ -58,12 +58,14 @@ void DEF::_parseNets(std::ifstream& def){
    
     std::string line;
 
-    while(line.find("END SPECIALNETS")==std::string::npos)
+    while(line.find("NETS")==std::string::npos)
         getline(def, line);
 
+    //getline(def, line);
+    //getline(def, line);
     getline(def, line);
-    getline(def, line);
-    getline(def, line);
+
+    std::cout << line << std::endl;
 
     while(line.find("END NETS")==std::string::npos){
         std::string lineCon;
@@ -115,12 +117,16 @@ std::vector <std::string> DEF::getOpens(std::string splitLayer){
         std::vector<std::string> netOpenList = net->getOpen();
         openList.insert(openList.end(), netOpenList.begin(), netOpenList.end());
         for(auto o: netOpenList){
-            if(cellList.find(net->getSrc()) != cellList.end())
-                std::cout << name << ", Loc: " << o << ", Source: " << net->getSrc() << ", Type: " << cellList[net->getSrc()]->getType() << std::endl;
-            else if(pinList.find(net->getSrc()) != pinList.end())
-                std::cout << name << ", Loc: " << o << ", Source: " << net->getSrc() << ", Type: PI" << std::endl;
-            else 
-                std::cout << name << ", Loc: " << o << std::endl;
+            if(!(net->getSrc()).empty())
+                std::cout << "Net: " << name << ", Loc: " << o << ", Source: " << net->getSrc() << std::endl;
+            else{
+                std::cout << "Net: " << name << ", Loc: " << o << ", ";
+                std::vector <std::string> sinkList = net->getSink();
+                std::cout << "Sink: ";
+                for (auto s: sinkList)
+                    std::cout << s << ", ";
+                std::cout << std::endl;                
+            }
         }
     }
     return openList;
