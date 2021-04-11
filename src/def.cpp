@@ -115,7 +115,12 @@ std::vector <std::string> DEF::getOpens(std::string splitLayer){
         std::vector<std::string> netOpenList = net->getOpen();
         openList.insert(openList.end(), netOpenList.begin(), netOpenList.end());
         for(auto o: netOpenList){
-            std::cout << name << ", Loc: " << o << ", Source: " << net->getSrc() << std::endl;
+            if(cellList.find(net->getSrc()) != cellList.end())
+                std::cout << name << ", Loc: " << o << ", Source: " << net->getSrc() << ", Type: " << cellList[net->getSrc()]->getType() << std::endl;
+            else if(pinList.find(net->getSrc()) != pinList.end())
+                std::cout << name << ", Loc: " << o << ", Source: " << net->getSrc() << ", Type: PI" << std::endl;
+            else 
+                std::cout << name << ", Loc: " << o << std::endl;
         }
     }
     return openList;

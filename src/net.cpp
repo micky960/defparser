@@ -2,6 +2,7 @@
 #include<vector>
 #include <boost/algorithm/string.hpp>
 #include<ctype.h>
+#include<string>
 
 #include "net.h"
 
@@ -12,6 +13,7 @@ NET::NET(std::string net){
     boost::split(tokens, net, boost::is_any_of("+"));
     boost::split(tokens, tokens[0], boost::is_any_of(" "));
     name = tokens[1];
+    std::replace(name.begin(), name.end(), '(', ' ');
     boost::algorithm::trim(name);
     boost::split(tokens, net, boost::is_any_of("+"));
     boost::split(tokens, tokens[0], boost::is_any_of("("));
