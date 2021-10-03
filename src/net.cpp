@@ -8,6 +8,7 @@
 
 NET::NET(std::string net){
 
+    std::cout << net << std::endl;
     src = "";
     std::vector<std::string> tokens;
     boost::split(tokens, net, boost::is_any_of("+"));
@@ -44,12 +45,17 @@ void NET::setSrc(std::string name){
 }
 
 void NET::parseOpens(std::string splitLayer){
+    //std::cout << "################### Calling parseOpens" << std::endl;
     //std::cout << name << std::endl;
-    std::unordered_map<std::string, int> locList;
+    std::unordered_map<std::string, std::pair<int, std::string> > locList;
     for(auto n: netSegmentList){
+        bool isSplitLayer = (n.find("metal"+splitLayer) != std::string::npos);
+        //std::cout << "netSegmentList: " << n << ", layer: " << isSplitLayer << std::endl;
         std::vector<std::string> tokens;
         boost::split(tokens, n, boost::is_any_of("("));
         std::string xPrev, yPrev;
+
+        bool isStackedVia = 0;
 
         for(int i=1; i<tokens.size(); i++){
             std::string x, y;
@@ -62,10 +68,44 @@ void NET::parseOpens(std::string splitLayer){
             ss1>>y;
             if(y == "*")
                 y = yPrev;
-            if(locList.find((x+","+y).c_str()) == locList.end())
-                locList.insert({(x+","+y).c_str(), 0});
+            //Patch for parsing stacked vias
+            //if (isSplitLayer && (tokens.size() == 2)){
+            //    isStackedVia = true;
+            //    std::cout << "Net: " << name << ", Loc: " << x << "," << y << ", Source: " << getSrc() << ", stacked via" << std::endl;
+            //}
+            if(locList.find((x+","+y).c_str()) == locList.end()){
+                if (isSplitLayer){
+                    if (tokens.size() == 2)
+                        locList.insert({(x+","+y).c_str(), std::make_pair (0, "isStackedVia")});
+                    else if (tokens.size() == 3)
+                        locList.insert({(x+","+y).c_str(), std::make_pair (0, "notStackedVia")});
+                }
+                else
+                    locList.insert({(x+","+y).c_str(), std::make_pair (0, "")});
+            }
             else{
-                locList[(x+","+y).c_str()] = locList[(x+","+y).c_str()]+1;
+                //locList[(x+","+y).c_str()] = locList[(x+","+y).c_str()] + 1;
+                std::pair <int, std::string > myPair = locList[(x+","+y).c_str()];
+                if (isSplitLayer){
+                    if(myPair.second.empty()){
+                        myPair.first = myPair.first + 1;
+                        if (tokens.size() == 2)
+                            myPair.second = "isStackedVia";
+                        else if (tokens.size() == 3)
+                            myPair.second = "notStackedVia";
+
+                        locList[(x+","+y).c_str()] = myPair;
+                    }
+                    else{
+                        myPair.first = myPair.first + 1;
+                        myPair.second = "notStackedVia";
+                        locList[(x+","+y).c_str()] = myPair;
+                    }   
+                }
+                else{
+                    myPair.first = myPair.first + 1;
+                    locList[(x+","+y).c_str()] = myPair;
+                }
                 //std::cout << x << "," << y << " collision: " << locList[(x+","+y).c_str()] << std::endl;
             }
             
@@ -75,7 +115,7 @@ void NET::parseOpens(std::string splitLayer){
         }
     }
     for(auto n: netSegmentList){
-        if(n.find("metal"+splitLayer) != std::string::npos){
+        //if(n.find("metal"+splitLayer) != std::string::npos){
             //std::cout << n << std::endl;
             std::vector<std::string> tokens;
             boost::split(tokens, n, boost::is_any_of("("));
@@ -92,13 +132,15 @@ void NET::parseOpens(std::string splitLayer){
                 ss1>>y;
                 if(y == "*")
                     y = yPrev;
-                if(locList[(x+","+y).c_str()] == 0)
+                if(locList[(x+","+y).c_str()].first == 0)
+                    openList.push_back(x+","+y);
+                else if(locList[(x+","+y).c_str()].first > 0 && locList[(x+","+y).c_str()].second == "isStackedVia")
                     openList.push_back(x+","+y);
                     //std::cout << x << ", " << y << "--> open" << std::endl;
                 xPrev = x;
                 yPrev = y;
                 //std::cout << x << ", " << y << std::endl;
             }
-        }
+        //}
     }
 }
