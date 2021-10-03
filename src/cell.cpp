@@ -7,6 +7,7 @@
 CELL::CELL(std::string line){
     
     std::vector<std::string> tokens;
+    std::cout << line << std::endl;
     boost::split(tokens, line, boost::is_any_of("+"));
     if(tokens.size() == 3){
         _parseNameType(tokens[0]);
