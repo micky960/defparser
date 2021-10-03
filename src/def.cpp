@@ -5,6 +5,7 @@
 
 DEF::DEF(std::ifstream& def){
 
+    // Requires order, if order is different fail!!! Reset file handler
    _parseComponents(def); 
    std::cout << "Cell parse passed" << std::endl;
    _parsePins(def); 
@@ -65,7 +66,7 @@ void DEF::_parseNets(std::ifstream& def){
     //getline(def, line);
     getline(def, line);
 
-    std::cout << line << std::endl;
+    //std::cout << line << std::endl;
 
     while(line.find("END NETS")==std::string::npos){
         std::string lineCon;
